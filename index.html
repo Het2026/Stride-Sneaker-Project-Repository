@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Stride Sneaker Store</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: bento home with a hero that swaps silhouettes and colourways; shop = filter rail + grid; flow pages in two columns. */
+:root{
+  --bg:#F1EEFF;--surface:#FFFFFF;--surface2:#F6F4FF;--line:#DDD7F3;--fg:#14112B;--mute:#6A6585;
+  --acc:#5B3DFF;--acc2:#8B5CFF;--pop:#FFE45C;--popfg:#14112B;--coral:#FF6B4A;
+  --good:#0E9F6E;--bad:#E11D48;--shadow:0 20px 40px -22px rgba(50,30,140,.45);
+  --c1:#9B6BFF;--c2:#4B2BD6;
+  --text:var(--fg);--panel:var(--surface);--panel2:var(--surface2);
+  --display:'Bricolage Grotesque','Arial Black',system-ui,sans-serif;--body:'DM Sans',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E0C1A;--surface:#181530;--surface2:#211D40;--line:#342F58;--fg:#F4F2FF;--mute:#A9A4C8;--acc:#8F7BFF;--acc2:#B39DFF;--good:#4ADE9A;--bad:#FF6B8A;--shadow:0 20px 40px -22px rgba(0,0,0,.8);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E0C1A;--surface:#181530;--surface2:#211D40;--line:#342F58;--fg:#F4F2FF;--mute:#A9A4C8;--acc:#8F7BFF;--acc2:#B39DFF;--good:#4ADE9A;--bad:#FF6B8A;--shadow:0 20px 40px -22px rgba(0,0,0,.8);color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:400 15px/1.55 var(--body);padding-block:0 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;padding-block:12px}
+.bar0{display:flex;align-items:center;gap:10px;background:color-mix(in srgb,var(--surface) 86%,transparent);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:99px;padding:8px 10px 8px 22px;box-shadow:var(--shadow)}
+.logo{font:800 22px var(--display);letter-spacing:-.05em;background:none;border:0;padding:0}
+.logo i{font-style:normal;color:var(--acc)}
+.links{display:flex;gap:2px;margin-left:14px}
+.links button{background:none;border:0;padding:8px 14px;border-radius:99px;color:var(--mute);font-weight:500}
+.links button:hover,.links button.on{background:var(--surface2);color:var(--fg)}
+.nav-r{margin-left:auto;display:flex;gap:8px;align-items:center}
+.ibtn{border:0;border-radius:99px;background:var(--surface2);padding:9px 16px;font-weight:700;display:inline-flex;gap:8px;align-items:center}
+.ibtn b{display:inline-grid;place-items:center;min-width:20px;height:20px;border-radius:99px;background:var(--acc);color:#fff;font-size:12px;padding:0 5px}
+.ibtn.go{background:var(--fg);color:var(--bg)}
+.btn{border:0;border-radius:99px;padding:15px 28px;font-weight:700;background:var(--acc);color:#fff;transition:transform .2s,box-shadow .2s;box-shadow:0 12px 28px -12px var(--acc)}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:var(--surface);color:var(--fg);box-shadow:none;border:1px solid var(--line)}
+.btn.block{width:100%}
+h1,h2,h3{font-family:var(--display);letter-spacing:-.04em;line-height:1;margin:0;text-wrap:balance}
+h1{font-size:clamp(42px,7.4vw,96px);font-weight:800}
+h2{font-size:clamp(26px,3.6vw,44px);font-weight:800}
+h3{font-size:18px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.mute{color:var(--mute)}.small{font-size:13px;color:var(--mute)}
+section{padding-block:48px 0}
+.sticker{display:inline-block;background:var(--pop);color:var(--popfg);font-weight:800;padding:6px 14px;border-radius:99px;font-size:13px;transform:rotate(-3deg)}
+/* hero */
+.herocard{position:relative;border-radius:40px;padding:clamp(22px,4vw,52px);overflow:hidden;display:grid;grid-template-columns:1fr 1.05fr;gap:16px;align-items:center;background:linear-gradient(135deg,color-mix(in srgb,var(--c1) 55%,var(--surface)),color-mix(in srgb,var(--c2) 35%,var(--surface)));transition:background .8s;margin-top:6px}
+.herocard p{max-width:44ch;font-size:17px;margin:18px 0 24px}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+.pillrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:22px}
+.pillrow button{border:1px solid color-mix(in srgb,var(--fg) 25%,transparent);background:color-mix(in srgb,var(--surface) 55%,transparent);border-radius:99px;padding:7px 14px;font-weight:700;font-size:13px}
+.pillrow button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.stage{position:relative;aspect-ratio:1/.9;display:grid;place-items:center;perspective:1100px;min-width:0}
+.orb{position:absolute;border-radius:50%}
+.orb.a{width:70%;aspect-ratio:1;background:radial-gradient(circle at 30% 30%,#fff9,transparent 55%),var(--c1);opacity:.55;animation:pulse 7s ease-in-out infinite;transition:background .8s}
+.orb.b{width:12%;aspect-ratio:1;top:6%;right:8%;background:var(--pop);animation:bob 5s ease-in-out infinite}
+.orb.c{width:7%;aspect-ratio:1;bottom:12%;left:6%;background:var(--coral);animation:bob 6s ease-in-out -2s infinite}
+.tilt-in{transform-style:preserve-3d;transition:transform .15s ease-out;width:100%}
+.stage .tilt-in{width:108%;margin-left:-4%}
+.float{animation:float 5s ease-in-out infinite;filter:drop-shadow(0 28px 22px rgba(20,10,60,.35))}
+.stage .sticker{position:absolute;right:2%;bottom:8%;transform:rotate(5deg) translateZ(60px);font-size:14px}
+@keyframes float{50%{transform:translateY(-14px) rotate(-1.5deg)}}
+@keyframes pulse{50%{transform:scale(1.06)}}
+@keyframes bob{50%{transform:translateY(-16px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{from{transform:scale(0)}}
+.dots{display:flex;gap:9px;flex-wrap:wrap}
+.dot{width:28px;height:28px;border-radius:50%;border:2px solid color-mix(in srgb,var(--fg) 20%,transparent);padding:0;transition:transform .2s}
+.dot:hover{transform:scale(1.12)}
+.dot.on{outline:2px solid var(--fg);outline-offset:3px}
+.marq{overflow:hidden;margin-top:18px;background:var(--fg);color:var(--bg);border-radius:99px;padding-block:12px;white-space:nowrap}
+.marq div{display:inline-block;animation:mq 34s linear infinite;font:800 18px var(--display);letter-spacing:-.02em}
+.marq span{margin-inline:22px}
+@keyframes mq{to{transform:translateX(-50%)}}
+/* bento */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.bt{background:var(--surface);border:1px solid var(--line);border-radius:30px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;min-width:0;text-align:left;overflow:hidden;transition:transform .2s}
+button.bt:hover{transform:translateY(-3px)}
+.bt.s2{grid-column:span 2}.bt.s3{grid-column:span 3}.bt.s4{grid-column:span 4}
+.bt .sh{margin:0 -8px}
+.bt.tone{background:linear-gradient(150deg,color-mix(in srgb,var(--acc) 22%,var(--surface)),var(--surface))}
+.bt.pop{background:var(--pop);color:var(--popfg);border-color:transparent}
+.bt.pop .small,.bt.pop .mute{color:#4b4320}
+.swr{display:flex;gap:10px;flex-wrap:wrap}
+.sw{width:52px;height:52px;border-radius:50%;border:3px solid var(--surface);box-shadow:0 0 0 1px var(--line);padding:0;transition:transform .2s}
+.sw:hover{transform:scale(1.1) rotate(-6deg)}
+/* cards */
+.head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:12px 12px 16px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:transform .25s,box-shadow .25s;min-width:0}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.card .img{aspect-ratio:4/3;border-radius:20px;display:grid;place-items:center;perspective:700px;overflow:hidden;position:relative}
+.card .img .tilt-in{width:94%}
+.card .meta{padding-inline:6px;display:grid;gap:4px}
+.card .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.brand{font-size:13px;color:var(--mute);font-weight:500}
+.price{font:800 18px var(--display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.badge{position:absolute;left:10px;top:10px;z-index:2;background:var(--pop);color:var(--popfg);font-size:12px;font-weight:800;padding:4px 10px;border-radius:99px;transform:rotate(-4deg)}
+.heart{position:absolute;right:10px;top:10px;z-index:2;width:36px;height:36px;border-radius:50%;border:0;background:color-mix(in srgb,var(--surface) 80%,transparent);font-size:17px;display:grid;place-items:center;padding:0;color:var(--fg)}
+.heart.on{background:var(--coral);color:#fff}
+.mini{display:flex;gap:4px}.mini i{width:11px;height:11px;border-radius:50%;display:block;border:1px solid rgba(0,0,0,.18)}
+.tag{font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--surface2);color:var(--mute);white-space:nowrap}
+.tag.Luxury{background:#3d3210;color:#f0d36b}.tag.Indie{background:#d6fff3;color:#0b6b57}.tag.Premium{background:#e5deff;color:#4128c9}
+:root[data-theme="dark"] .tag.Indie{background:#0f3d33;color:#6ee7cf}:root[data-theme="dark"] .tag.Premium{background:#2c2466;color:#c6b9ff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tag.Indie{background:#0f3d33;color:#6ee7cf}:root:not([data-theme="light"]) .tag.Premium{background:#2c2466;color:#c6b9ff}}
+.brands{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.bn{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:18px;text-align:left;display:grid;gap:10px;transition:transform .2s,border-color .2s}
+.bn:hover{transform:translateY(-3px);border-color:var(--acc)}
+.bn b{font:800 21px var(--display);letter-spacing:-.04em;line-height:1.05}
+.bn.in{background:linear-gradient(150deg,color-mix(in srgb,var(--coral) 18%,var(--surface)),var(--surface))}
+/* shop */
+.shop{display:grid;grid-template-columns:270px 1fr;gap:22px;align-items:start;padding-top:18px}
+.side{background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:18px;position:sticky;top:84px;max-height:calc(100vh - 100px);overflow:auto}
+.side summary{font:800 18px var(--display);letter-spacing:-.03em;cursor:pointer;list-style:none;display:flex;justify-content:space-between}
+.fg{display:grid;gap:8px;margin-top:16px}
+.fg h4{margin:0;font-size:13px;color:var(--mute);font-weight:700}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--surface2);border-radius:99px;padding:6px 12px;font-weight:500;font-size:13px;display:inline-flex;gap:6px;align-items:center}
+.chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chip i{width:12px;height:12px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.2)}
+input[type=range]{width:100%;accent-color:var(--acc)}
+input[type=search],input[type=text],input[type=tel],input[type=email],select{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;color:var(--fg);font:inherit;width:100%;min-width:0}
+input:invalid:not(:placeholder-shown){border-color:var(--bad)}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.toolbar input{flex:1;min-width:180px}.toolbar select{width:auto}
+/* product */
+.pdp{display:grid;grid-template-columns:1.15fr 1fr;gap:28px;padding-top:12px}
+.pdp .stage{aspect-ratio:1/.9;border-radius:40px;background:linear-gradient(135deg,color-mix(in srgb,var(--c1) 45%,var(--surface)),color-mix(in srgb,var(--c2) 25%,var(--surface)));transition:background .8s}
+.crumb{background:none;border:0;color:var(--mute);padding:6px 0;font-weight:500}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:22px}
+.sizes{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:8px}
+.sizes button{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:11px 0;font-weight:700}
+.sizes button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.sizes.err button{border-color:var(--bad)}
+.err-msg{color:var(--bad);font-size:13px;min-height:20px}
+.cmp{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.cmp th{font-size:13px;color:var(--mute);text-align:left;padding:8px 10px;font-weight:500}
+.cmp td{padding:12px 10px;border-top:1px solid var(--line)}
+.cmp td:not(:first-child),.cmp th:not(:first-child){text-align:right}
+.cmp tr.us td{background:color-mix(in srgb,var(--acc) 14%,transparent);font-weight:700;border-top-color:transparent}
+.cmp tr.us td:first-child{border-radius:14px 0 0 14px}.cmp tr.us td:last-child{border-radius:0 14px 14px 0}
+.bar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--mute)}
+.bar.us i{background:linear-gradient(90deg,var(--acc),var(--acc2))}
+.save{display:inline-block;background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good);padding:4px 12px;border-radius:99px;font-weight:700;font-size:13px}
+.scroll{overflow-x:auto}
+.perks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:13px;color:var(--mute)}
+.perks div{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px}
+.perks b{display:block;color:var(--fg)}
+.spec{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;font-size:14px}.spec span{color:var(--mute)}
+/* flow */
+.two{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;padding-top:20px;align-items:start}
+.line{display:grid;grid-template-columns:120px 1fr auto;gap:16px;align-items:center;padding:16px 0;border-top:1px solid var(--line)}
+.line:first-of-type{border-top:0}
+.line .img{background:var(--surface2);border-radius:20px;padding:8px}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:99px}
+.qty button{background:none;border:0;width:34px;height:34px;font-size:18px}
+.qty span{min-width:22px;text-align:center;font-variant-numeric:tabular-nums}
+.sum{display:grid;gap:10px}.sum>div{display:flex;justify-content:space-between;gap:12px}
+.sum .tot{border-top:1px solid var(--line);padding-top:14px;font:800 22px var(--display);letter-spacing:-.03em}
+.link{background:none;border:0;color:var(--mute);text-decoration:underline;padding:0}
+.steps{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--mute);padding-top:14px;flex-wrap:wrap}
+.steps b{color:var(--fg)}
+.steps .n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--surface);border:1px solid var(--line);font-size:12px;margin-right:6px}
+.steps .on .n{background:var(--acc);color:#fff;border-color:var(--acc)}
+.steps i{width:26px;height:1px;background:var(--line)}
+form{display:grid;gap:14px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label{display:grid;gap:6px;font-size:13px;color:var(--mute);font-weight:500}
+.opt{display:flex;gap:14px;align-items:center;border:1px solid var(--line);border-radius:18px;padding:14px;cursor:pointer;background:var(--surface2)}
+.opt:has(input:checked){border-color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,var(--surface2))}
+.opt input{accent-color:var(--acc)}
+.opt b{display:block;color:var(--fg)}
+.proc{position:fixed;inset:0;background:color-mix(in srgb,var(--bg) 92%,transparent);display:grid;place-items:center;z-index:50;text-align:center}
+.spin{width:54px;height:54px;border-radius:50%;border:4px solid var(--line);border-top-color:var(--acc);animation:spin .8s linear infinite;margin:0 auto 18px}
+.ok{width:84px;height:84px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;margin:0 auto 18px;font-size:40px;animation:pop .5s cubic-bezier(.3,1.6,.5,1) both}
+.center{text-align:center;max-width:560px;margin:56px auto 0}
+.track{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding-top:20px;align-items:start}
+.st{display:grid;grid-template-columns:34px 1fr;gap:14px;padding-bottom:26px;position:relative}
+.st::before{content:"";position:absolute;left:16px;top:30px;bottom:-2px;width:2px;background:var(--line)}
+.st:last-child::before{display:none}.st.done::before{background:var(--acc)}
+.st .d{width:34px;height:34px;border-radius:50%;background:var(--surface2);border:2px solid var(--line);display:grid;place-items:center;font-size:14px;z-index:1}
+.st.done .d{background:var(--acc);border-color:var(--acc);color:#fff}
+.st.now .d{box-shadow:0 0 0 6px color-mix(in srgb,var(--acc) 30%,transparent)}
+.st small{color:var(--mute);display:block}
+.st:not(.done):not(.now) b{color:var(--mute)}
+.route{height:10px;border-radius:99px;background:var(--surface2);position:relative;margin:34px 6px 10px}
+.route i{position:absolute;inset:0 auto 0 0;border-radius:99px;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .9s}
+.route u{position:absolute;top:50%;width:30px;height:30px;border-radius:50%;background:var(--fg);color:var(--bg);display:grid;place-items:center;transform:translate(-50%,-50%);transition:left .9s;text-decoration:none}
+.rl{display:flex;justify-content:space-between;font-size:12px;color:var(--mute)}
+footer{margin-top:64px;border-top:1px solid var(--line);padding-top:22px;color:var(--mute);font-size:13px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.view{animation:fade .35s ease both}@keyframes fade{from{opacity:.0}to{opacity:1}}
+.v3d{position:absolute;inset:0;z-index:1}
+.hint{position:absolute;left:14px;bottom:12px;z-index:2;background:color-mix(in srgb,var(--surface) 82%,transparent);border-radius:99px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--fg)}
+.snap img{filter:drop-shadow(0 12px 10px rgba(30,15,80,.22))}
+@media(max-width:900px){.herocard,.pdp,.two,.track,.shop{grid-template-columns:1fr}.links{display:none}.bt.s2,.bt.s3,.bt.s4{grid-column:span 6}.side{position:static;max-height:none}.line{grid-template-columns:90px 1fr}.line>:last-child{grid-column:2}.f2{grid-template-columns:1fr}.perks{grid-template-columns:1fr}}
+@media(max-width:520px){.bar0{padding-left:16px}.ibtn .lbl{display:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap"><div class="bar0">
+  <button class="logo" data-go="home" aria-label="Stride home">stride<i>.</i></button>
+  <div class="links" id="links"></div>
+  <div class="nav-r"><button class="ibtn" data-go="shop">Shop</button><button class="ibtn" data-go="wish" id="wishBtn" aria-label="Wishlist">♥<b>0</b></button><button class="ibtn go" data-go="cart" id="cartBtn"><span class="lbl">Bag</span><b>0</b></button><button class="ibtn" id="themeBtn" aria-label="Switch light or dark theme">◐</button></div>
+</div></div></nav>
+<main class="wrap" id="app"></main>
+<div class="wrap"><footer><span>Stride is a design concept. Brands, stores and prices shown are fictional samples.</span><span>Prices in INR, tax included.</span></footer></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* name,u1,u2,toe/heel,accent,sole,soleShade,outsole,lace,tongue,pattern,family */
+const CW=[
+['Volt Runner','#D4FF4F','#7ED321','#12121A','#7B5CFF','#FFFFFF','#D9D9E6','#15151D','#12121A','#B6F23A','none'],
+['Neon Dusk','#9B6BFF','#4B2BD6','#FF4D8D','#C6FF3D','#FFFFFF','#D9D9E6','#15151D','#FFFFFF','#6A44F0','stripes'],
+['Solar Flare','#FFB04D','#FF4D2E','#FFF1D6','#14141C','#FFF1D6','#E7D2A8','#2A1A10','#FFF1D6','#FF8A3D','dots'],
+['Glacier','#CDEEFF','#5CB8FF','#0F1B3D','#FFFFFF','#FFFFFF','#CFE3F2','#0F1B3D','#0F1B3D','#A8DCFF','waves'],
+['Obsidian Gold','#3A3A46','#0C0C12','#D4AF37','#F2D675','#25252E','#101016','#D4AF37','#F2D675','#23232C','checker'],
+['Rose Quartz','#FFD0E8','#FF7DB8','#FFFFFF','#7B5CFF','#FFFFFF','#F3D9E6','#7B5CFF','#FFFFFF','#FFB3D6','dots'],
+['Jungle Camo','#4C8F5C','#1E4D2B','#C9B27C','#FF8A3D','#E7D9B0','#C9B27C','#2A2A1A','#E7D9B0','#3E7A4D','camo'],
+['Chrome Ice','#F7F7FC','#A8A8BC','#2B2B36','#2EE6D6','#FFFFFF','#D9D9E6','#2B2B36','#2B2B36','#E2E2EE','stripes'],
+['Mint Fizz','#B8FFE6','#2EE6A8','#0E3B2E','#FFFFFF','#FFFFFF','#CDEFE3','#0E3B2E','#0E3B2E','#8CF5D2','dots'],
+['Lilac Haze','#E4D4FF','#B28DFF','#FFFFFF','#FF6BB5','#FFFFFF','#E6DDF7','#FF6BB5','#FFFFFF','#CDB2FF','waves'],
+['Sunset Fade','#FF9A5A','#FF3D8B','#2B1030','#FFE45C','#FFF3E6','#F5D3BD','#2B1030','#2B1030','#FF7A70','none'],
+['Cobalt Pop','#4F6BFF','#1B2BC4','#FFE45C','#FFFFFF','#FFFFFF','#D5DAF7','#14112B','#FFFFFF','#3A52F0','stripes'],
+['Cherry Red','#FF5A5A','#C4122F','#FFFFFF','#14112B','#FFFFFF','#EBD0D4','#14112B','#FFFFFF','#E63946','none'],
+['Sand Dune','#F2E3C8','#D1B58A','#8A6A3E','#FFFFFF','#FFF8EA','#E8D9BB','#8A6A3E','#8A6A3E','#E6D2AE','zig'],
+['Pure White','#FFFFFF','#E6E3F0','#F2F0FA','#4F3BFF','#FFFFFF','#E0DCEE','#4F3BFF','#4F3BFF','#F7F5FD','none'],
+['Ink Black','#2A2838','#0E0D16','#1A1926','#FF4D8D','#14112B','#0A0910','#4F3BFF','#FF4D8D','#211F2E','splat']
+].map(a=>({n:a[0],u1:a[1],u2:a[2],p:a[3],acc:a[4],sole:a[5],soleD:a[6],out:a[7],lace:a[8],tongue:a[9],pat:a[10]}));
+const FAM={Black:[4,15],White:[14],Grey:[7],Blue:[3,11],Green:[0,6,8],Purple:[1,9],Pink:[5],Red:[12],Orange:[2,10],Neutral:[13]};
+const STY=['Runner','High-top','Chunky','Court','Slip-on'];
+const BR=[['Dhoop Studio','India','Indie'],['Kaveri Athletics','India','Premium'],['Marwar & Co.','India','Luxury'],['Jugaad Lab','India','Indie'],['Komorebi','Japan','Indie'],['Hanbit','South Korea','Premium'],['Nimbus','USA','Premium'],['Vanta Sport','Germany','Premium'],['Tidepool Studio','Australia','Indie'],['Alder & Fox','UK','Indie'],['Praia','Brazil','Indie'],['Nordlys','Sweden','Premium'],['Savanna Run','Kenya','Premium'],['Maison Lumière','France','Luxury'],['Aurelian','Italy','Luxury'],['Valcour','France','Luxury']].map(a=>({n:a[0],o:a[1],t:a[2]}));
+const RAW=`0|Sunbeam|Runner|4299|2|U
+0|Marigold Mid|High-top|4999|10|W
+0|Chai Low|Court|3799|13|U
+0|Haveli Slip|Slip-on|3499|11|W
+3|Patch 01|Chunky|5499|6|U
+3|Rickshaw Run|Runner|4799|0|M
+3|Monsoon|High-top|5899|3|U
+3|Kullad Court|Court|4399|12|W
+1|Marathon Pro|Runner|8999|3|M
+1|Kaveri Flex|Runner|7999|0|W
+1|Court Ace|Court|8499|14|U
+1|Sprint Lite|Runner|7499|11|M
+2|Jodhpur Lux|Court|24900|4|M
+2|Rani Slip|Slip-on|22900|9|W
+2|Sultan High|High-top|29900|4|U
+4|Drift 01|Runner|6499|3|U
+4|Drift 02|Chunky|6999|6|U
+4|Hinode High|High-top|7299|5|W
+4|Mizu Slip|Slip-on|5999|7|U
+5|Seoul Chunk|Chunky|10499|9|W
+5|Neon Han|Runner|9999|1|U
+5|Gangnam Court|Court|9499|14|M
+5|Hanbit Hi|High-top|11499|11|U
+6|Cloudrunner 4|Runner|9999|0|M
+6|Aero Chrome|Runner|12999|7|U
+6|Skyline Hi|High-top|11999|3|M
+6|Nimbus Court 90|Court|8999|14|W
+6|Puffy Max|Chunky|13499|5|W
+7|Pulse GT|Runner|11499|1|M
+7|Ember X|Runner|10499|2|M
+7|Vanta Block|Chunky|12499|15|U
+7|Court Prime|Court|9799|12|W
+8|Reef Low|Court|5999|5|W
+8|Kelp Slip|Slip-on|5299|8|U
+8|Swell Hi|High-top|6899|3|M
+9|Burrow Mid|High-top|7299|6|M
+9|Heath Runner|Runner|6799|13|U
+9|Fox Court|Court|6499|12|M
+10|Copa Chunk|Chunky|6799|10|W
+10|Samba Slip|Slip-on|5599|2|U
+10|Rio Hi|High-top|7199|8|W
+11|Aurora Run|Runner|13499|9|U
+11|Fjord Court|Court|11999|14|M
+11|Nordic Chunk|Chunky|14499|7|W
+12|Mara Runner|Runner|9299|2|M
+12|Kilimanjaro|High-top|10299|6|U
+12|Serengeti|Runner|8799|13|W
+13|Éclat|Court|58000|4|W
+13|Soirée High|High-top|64500|9|W
+13|Lumière Slip|Slip-on|49500|14|U
+14|Sovereign|Runner|74500|7|M
+14|Doge Court|Court|68000|4|M
+14|Aureo Chunk|Chunky|79000|15|U
+15|Noir Court|Court|49900|4|U
+15|Valcour Hi|High-top|55900|15|M
+15|Rive Gauche|Slip-on|47500|13|W`;
+const GN={M:'Men',W:'Women',U:'Unisex'};
+const PRODS=RAW.split('\n').map((l,i)=>{const [b,name,style,price,cw,g]=l.split('|');const p={id:i+1,b:+b,name,style,price:+price,cw:+cw,g,tier:BR[+b].t};const n=p.tier==='Luxury'?4:5;p.opts=[...Array(n)].map((_,k)=>(p.cw+k*3)%16);return p});
+const RET=[{n:'KickBazaar',f:1.12,s:149},{n:'SoleMart',f:1.08,s:99},{n:'Shoeverse',f:1.19,s:0}];
+const S={route:'home',pid:null,cw:null,size:null,err:false,cart:[],wish:[],sort:'feat',shown:24,coupon:'',ship:'std',pay:'upi',stepN:0,order:null,hero:11,hst:'Chunky',
+ f:{tier:[],brand:[],style:[],color:[],gender:[],origin:[],max:80000,q:''},addr:{name:'',phone:'',email:'',line:'',city:'Pune',pin:''}};
+const ROUTES=['home','shop','product','cart','checkout','payment','done','track','wish'];
+const inr=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+const $=s=>document.querySelector(s);
+const prod=id=>PRODS[id-1];
+let uid=0;
+function pat(k,c){let s='';
+ if(k==='stripes')for(let i=0;i<14;i++)s+=`<path d="M${40+i*46} 220 L${130+i*46} 60" stroke="${c}" stroke-opacity="0.35" stroke-width="9"/>`;
+ if(k==='dots')for(let y=0;y<8;y++)for(let x=0;x<16;x++)s+=`<circle cx="${60+x*38+(y%2)*19}" cy="${70+y*20}" r="4.5" fill="${c}" fill-opacity="0.4"/>`;
+ if(k==='checker')for(let y=0;y<6;y++)for(let x=0;x<16;x++)if((x+y)%2===0)s+=`<rect x="${50+x*36}" y="${60+y*26}" width="18" height="13" fill="${c}" fill-opacity="0.22"/>`;
+ if(k==='camo')['M90 130 q30 -30 70 -6 q20 24 -20 40 q-40 6 -50 -34z','M250 140 q40 -34 80 -4 q24 30 -24 44 q-46 4 -56 -40z','M420 150 q36 -26 70 2 q16 28 -26 34 q-40 -2 -44 -36z','M180 80 q30 -16 56 6 q6 22 -24 24 q-30 -4 -32 -30z','M520 170 q24 -10 44 8 q0 20 -26 20 q-22 -8 -18 -28z'].forEach((d,i)=>s+=`<path d="${d}" fill="${i%2?c:'#000'}" fill-opacity="0.28"/>`);
+ if(k==='waves')for(let i=0;i<6;i++)s+=`<path d="M30 ${90+i*22} q40 -22 80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0" stroke="${c}" stroke-opacity="0.4" stroke-width="5" fill="none"/>`;
+ if(k==='zig')for(let i=0;i<5;i++)s+=`<path d="M30 ${80+i*28} l25 -16 l25 16 l25 -16 l25 16 l25 -16 l25 16 l25 -16 l25 16 l25 -16 l25 16 l25 -16 l25 16 l25 -16 l25 16 l25 -16 l25 16" stroke="${c}" stroke-opacity="0.45" stroke-width="5" fill="none"/>`;
+ if(k==='splat'){[[120,120,12],[200,150,7],[260,100,10],[330,150,6],[420,130,12],[520,160,8],[160,70,6],[480,170,5],[90,170,7],[300,60,5]].forEach(a=>s+=`<circle cx="${a[0]}" cy="${a[1]}" r="${a[2]}" fill="${c}" fill-opacity="0.7"/>`)}
+ return s}
+const UP='M70 98 C50 112 44 160 46 206 L598 206 C618 198 618 176 596 162 C570 148 520 146 478 128 C440 112 400 84 360 62 C340 52 322 54 308 68 C292 84 268 100 234 102 L128 96 C104 92 84 90 70 98 Z';
+const UH='M72 40 C52 60 44 130 46 206 L598 206 C618 198 618 176 596 162 C570 148 520 146 478 128 C440 112 410 88 380 68 C362 56 340 50 320 52 C306 54 300 44 280 34 C250 22 160 20 112 26 C92 28 80 32 72 40 Z';
+const HEEL='M40 210 C38 160 48 112 70 96 C90 88 110 90 130 96 C118 130 114 170 118 210 Z';
+const HEELH='M40 210 C38 110 48 50 72 38 C92 30 112 30 132 34 C120 90 116 150 118 210 Z';
+const MID={Runner:'M38 232 C36 214 52 206 78 206 L575 206 C612 206 626 226 618 246 C612 260 596 268 572 268 L84 268 C56 268 40 256 38 232 Z',
+ Court:'M40 218 C40 208 54 206 78 206 L578 206 C610 206 620 216 616 228 C612 240 598 244 574 244 L84 244 C58 244 42 238 40 218 Z',
+ Chunky:'M30 226 C26 200 48 192 80 192 L580 192 C624 192 638 224 628 254 C620 278 596 290 566 290 L88 290 C52 290 32 264 30 226 Z'};
+const OUT={Runner:'M52 262 L600 262 C606 262 608 270 600 276 C590 284 575 288 560 288 L96 288 C70 288 56 280 52 262 Z',
+ Court:'M52 238 L600 238 C606 238 608 246 600 250 C590 256 575 258 560 258 L96 258 C70 258 56 254 52 238 Z',
+ Chunky:'M52 280 L600 280 C606 280 608 288 600 292 C590 298 575 300 560 300 L96 300 C70 300 56 296 52 280 Z'};
+function shoe(i,st){st=st||'Runner';const o=CW[i],u='s'+(uid++);
+ const hi=st==='High-top',dy=st==='Court'?26:st==='Chunky'?-16:0,up=hi?UH:UP,heel=hi?HEELH:HEEL;
+ const msKey=st==='Court'?'Court':st==='Chunky'?'Chunky':'Runner';
+ let lace='';
+ if(st==='Slip-on'){for(let k=0;k<4;k++)lace+=`<path d="M${330+k*34} ${68+k*18} q-40 30 -46 62" stroke="${o.acc}" stroke-width="10" stroke-linecap="round" fill="none" opacity=".9"/>`}
+ else{const n=hi?6:st==='Court'?4:5,x0=hi?330:352,y0=hi?52:66,sx=hi?26:30,sy=hi?12.5:17;for(let k=0;k<n;k++){const x=x0+k*sx,y=y0+k*sy;lace+=`<path d="M${x} ${y} L${x-32} ${y+40}" stroke="${o.lace}" stroke-width="8" stroke-linecap="round"/><circle cx="${x-4}" cy="${y+6}" r="3" fill="#000" fill-opacity="0.35"/>`}}
+ const tongue=st==='Slip-on'?'':hi?`<path d="M300 40 C318 18 342 10 366 28 L384 50 C364 62 330 70 300 74 Z" fill="${o.tongue}"/>`:`<path d="M300 72 C318 50 340 40 364 56 L382 74 C362 86 330 94 300 98 Z" fill="${o.tongue}"/>`;
+ const collar=hi?'<path d="M114 28 C170 38 240 40 282 36 C256 20 170 18 114 28 Z" fill="#14141c"/>':'<path d="M130 96 C160 106 220 110 264 102 C250 88 200 82 150 86 Z" fill="#14141c"/>';
+ const extra=st==='Chunky'?`<path d="M34 240 C200 226 450 226 624 240 L626 252 C620 276 596 288 566 288 L88 288 C52 288 34 266 32 240 Z" fill="${o.acc}" fill-opacity=".35"/>`:'';
+ return `<svg viewBox="0 0 640 330" style="width:100%;height:auto;display:block" role="img" aria-label="${o.n} ${st} sneaker"><defs>
+<radialGradient id="${u}a" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000" stop-opacity=".5"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+<linearGradient id="${u}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${o.u1}"/><stop offset="1" stop-color="${o.u2}"/></linearGradient>
+<linearGradient id="${u}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${o.sole}"/><stop offset="1" stop-color="${o.soleD}"/></linearGradient>
+<linearGradient id="${u}d" x1=".2" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient>
+<clipPath id="${u}e"><path d="${up}"/></clipPath></defs>
+<ellipse cx="330" cy="300" rx="300" ry="20" fill="url(#${u}a)"/>
+<path d="${OUT[msKey]}" fill="${o.out}"/>
+<path d="${MID[msKey]}" fill="url(#${u}c)"/>${extra}
+<path d="M58 ${st==='Court'?230:244} C200 ${st==='Court'?224:234} 420 ${st==='Court'?224:234} 606 ${st==='Court'?230:244}" stroke="#000" stroke-opacity=".14" stroke-width="3" fill="none"/>
+<g transform="translate(0 ${dy})"><path d="${up}" fill="url(#${u}b)"/>
+<g clip-path="url(#${u}e)">${pat(o.pat,o.acc)}
+<path d="M470 210 C470 176 500 148 544 150 C588 152 622 176 604 210 Z" fill="${o.p}"/><path d="${heel}" fill="${o.p}"/>
+<path d="M150 210 C190 172 250 152 300 122 C330 104 352 98 382 110 C402 120 412 132 432 142 C382 152 332 170 292 210 Z" fill="${o.acc}"/></g>
+${tongue}${collar}${lace}<path d="${up}" fill="url(#${u}d)"/>
+<rect x="52" y="${hi?34:92}" width="26" height="8" rx="4" fill="${o.acc}" transform="rotate(-18 52 ${hi?34:92})"/></g></svg>`}
+/* ===== 3D sneakers (three.js): live turntable + rendered stills ===== */
+const HAS3D=(()=>{try{if(!window.THREE)return false;const c=document.createElement('canvas');return !!(c.getContext('webgl2')||c.getContext('webgl'))}catch(e){return false}})();
+const smooth=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
+function interp(p,t){for(let i=1;i<p.length;i++){if(t<=p[i][0]){const a=p[i-1],b=p[i],k=(t-a[0])/((b[0]-a[0])||1),e=(1-Math.cos(Math.PI*k))/2;return a[1]+(b[1]-a[1])*e}}return p[p.length-1][1]}
+const WSP=[[0,0],[.02,.28],[.07,.41],[.25,.48],[.5,.45],[.68,.56],[.86,.55],[.95,.43],[.99,.24],[1,0]];
+const HP=[[0,.3],[.03,.72],[.1,.95],[.2,1],[.32,.95],[.42,.8],[.55,.66],[.7,.52],[.85,.38],[.95,.24],[1,.06]];
+const SC={Runner:{sol:.22,hs:1,ws:1,hb:0},'High-top':{sol:.22,hs:1,ws:1,hb:.6},Chunky:{sol:.36,hs:1.05,ws:1.1,hb:0},Court:{sol:.15,hs:.9,ws:1,hb:0},'Slip-on':{sol:.2,hs:.92,ws:1,hb:-.28}};
+function prof(st){const c=SC[st]||SC.Runner,L=3;const WS=t=>interp(WSP,t)*c.ws,WU=t=>Math.max(WS(t)-.065,0),Hf=t=>Math.max(interp(HP,t)*c.hs+c.hb*(1-smooth(.18,.55,t)),.03);return {c,L,WS,WU,Hf}}
+function rng(s){return()=>(s=(s*16807)%2147483647)/2147483647}
+const TEX={};
+function texFor(i){if(TEX[i])return TEX[i];const o=CW[i],W=1024,H=512,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
+ const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,o.u2);g.addColorStop(.5,o.u1);g.addColorStop(1,o.u2);x.fillStyle=g;x.fillRect(0,0,W,H);
+ x.save();x.beginPath();x.rect(.17*W,0,.7*W,H);x.clip();x.globalAlpha=.42;x.fillStyle=o.acc;x.strokeStyle=o.acc;const R=rng(7+i),k=o.pat;
+ if(k==='stripes'){x.lineWidth=20;for(let a=-10;a<30;a++){x.beginPath();x.moveTo(a*64,H);x.lineTo(a*64+220,0);x.stroke()}}
+ if(k==='dots')for(let r=0;r<14;r++)for(let c=0;c<26;c++){x.beginPath();x.arc(c*40+(r%2)*20,r*38,8,0,7);x.fill()}
+ if(k==='checker')for(let r=0;r<16;r++)for(let c=0;c<30;c++)if((r+c)%2===0)x.fillRect(c*34,r*34,34,34);
+ if(k==='camo')for(let n=0;n<32;n++){x.fillStyle=n%2?o.acc:'#000';x.beginPath();x.ellipse(R()*W,R()*H,30+R()*50,18+R()*30,R()*3,0,7);x.fill()}
+ if(k==='waves'){x.lineWidth=12;for(let r=0;r<10;r++){x.beginPath();for(let xx=0;xx<=W;xx+=12)x.lineTo(xx,r*56+Math.sin(xx/38)*20);x.stroke()}}
+ if(k==='zig'){x.lineWidth=9;for(let r=0;r<12;r++){x.beginPath();for(let xx=0;xx<=W;xx+=34)x.lineTo(xx,r*44+((xx/34)%2?-16:16));x.stroke()}}
+ if(k==='splat')for(let n=0;n<70;n++){x.beginPath();x.arc(R()*W,R()*H,4+R()*10,0,7);x.fill()}
+ x.restore();
+ x.fillStyle=o.p;x.fillRect(0,0,.17*W,H);x.beginPath();x.moveTo(.87*W,0);x.quadraticCurveTo(.79*W,H/2,.87*W,H);x.lineTo(W,H);x.lineTo(W,0);x.closePath();x.fill();
+ const P=(u,f)=>[u*W,f*H/2],half=fn=>{fn();x.save();x.translate(0,H);x.scale(1,-1);fn();x.restore()};
+ x.fillStyle=o.acc;half(()=>{x.beginPath();x.moveTo(...P(.12,.96));x.quadraticCurveTo(...P(.5,.66),...P(.82,.3));x.lineTo(...P(.82,.15));x.quadraticCurveTo(...P(.5,.42),...P(.2,.7));x.closePath();x.fill()});
+ const t=new THREE.CanvasTexture(cv);t.anisotropy=4;return TEX[i]=t}
+function loftGeo(P,base){const N=72,M=36,pos=[],uv=[],idx=[];
+ for(let i=0;i<=N;i++){const t=(1-Math.cos(Math.PI*i/N))/2,w=P.WU(t),h=P.Hf(t),x=-P.L/2+P.L*t;
+  for(let j=0;j<=M;j++){const th=Math.PI*j/M,c=Math.cos(th),s=Math.sin(th);pos.push(x,base+h*Math.pow(Math.max(s,0),.77),w*Math.sign(c)*Math.pow(Math.abs(c),.77));uv.push(t,j/M)}}
+ for(let i=0;i<N;i++)for(let j=0;j<M;j++){const a=i*(M+1)+j,b=a+1,c=a+M+1,d=c+1;idx.push(a,c,b,b,c,d)}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return g}
+function soleGeo(P,grow,depth){const n=80,pts=[];
+ for(let i=0;i<=n;i++){const t=(1-Math.cos(Math.PI*i/n))/2;pts.push(new THREE.Vector2(-P.L/2+P.L*t,P.WS(t)+(i&&i<n?grow:0)))}
+ for(let i=n-1;i>=1;i--){const t=(1-Math.cos(Math.PI*i/n))/2;pts.push(new THREE.Vector2(-P.L/2+P.L*t,-(P.WS(t)+grow)))}
+ const g=new THREE.ExtrudeGeometry(new THREE.Shape(pts),{depth,bevelEnabled:true,bevelThickness:.018,bevelSize:.018,bevelSegments:3,curveSegments:1});g.rotateX(-Math.PI/2);return g}
+function buildShoe(i,st){const o=CW[i],P=prof(st),sol=P.c.sol,g=new THREE.Group(),L=P.L;
+ const Mt=(c,r)=>new THREE.MeshStandardMaterial({color:c,roughness:r==null?.6:r,metalness:.02});
+ g.add(new THREE.Mesh(soleGeo(P,0,.06),Mt(o.out,.9)));
+ const mid=new THREE.Mesh(soleGeo(P,0,sol-.06),Mt(o.sole,.75));mid.position.y=.06;g.add(mid);
+ const str=new THREE.Mesh(soleGeo(P,.016,.035),Mt(o.acc,.5));str.position.y=.06+(sol-.06)*.45;g.add(str);
+ const base=sol*.92,X=t=>-L/2+L*t;
+ g.add(new THREE.Mesh(loftGeo(P,base),new THREE.MeshStandardMaterial({map:texFor(i),roughness:.55,metalness:.03,side:THREE.DoubleSide})));
+ const t0=st==='High-top'?.12:.17,x0=X(t0),hy=base+P.Hf(t0),rz=P.WU(t0)*.62,rx=st==='Slip-on'?.4:.32;
+ const disc=new THREE.Mesh(new THREE.CircleGeometry(1,32),new THREE.MeshBasicMaterial({color:'#0c0b14'}));disc.rotation.x=-Math.PI/2;disc.scale.set(rx*.92,rz*.92,1);disc.position.set(x0,hy+.004,0);g.add(disc);
+ const rim=new THREE.Mesh(new THREE.TorusGeometry(1,.17,10,40),Mt(o.tongue,.7));rim.rotation.x=Math.PI/2;rim.scale.set(rx,rz,.5);rim.position.set(x0,hy-.01,0);g.add(rim);
+ if(st!=='Slip-on'){
+  const tn=new THREE.Mesh(new THREE.SphereGeometry(1,20,12),Mt(o.tongue,.7)),tt=.31;tn.scale.set(.28,.09,P.WU(tt)*.5);tn.position.set(X(tt),base+P.Hf(tt)+.06,0);tn.rotation.z=Math.atan((P.Hf(tt+.01)-P.Hf(tt-.01))/(.02*L))*1;g.add(tn);
+  const n=st==='High-top'?7:6;
+  for(let k=0;k<n;k++){const t=.37+k*(.36/(n-1)),e=.01,sl=(P.Hf(t+e)-P.Hf(t-e))/(2*e*L),grp=new THREE.Group(),lc=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,Math.max(P.WU(t)*1.1,.3),8),Mt(o.lace,.7));lc.rotation.x=Math.PI/2;grp.add(lc);grp.rotation.z=Math.atan(sl);grp.position.set(X(t),base+P.Hf(t)+.035,0);g.add(grp)}
+ }
+ const tab=new THREE.Mesh(new THREE.BoxGeometry(.1,.26,.12),Mt(o.acc,.6));tab.position.set(X(.03),base+P.Hf(.03)+.02,0);g.add(tab);
+ const w=new THREE.Group();g.position.y=-.55;w.add(g);return w}
+function disposeG(g){g.traverse(m=>{if(m.geometry)m.geometry.dispose();if(m.material)m.material.dispose()})}
+let SHT=null;
+function shadowTex(){if(SHT)return SHT;const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),r=x.createRadialGradient(64,64,0,64,64,64);r.addColorStop(0,'rgba(10,5,40,.5)');r.addColorStop(1,'rgba(10,5,40,0)');x.fillStyle=r;x.fillRect(0,0,128,128);return SHT=new THREE.CanvasTexture(c)}
+function makeScene(){const sc=new THREE.Scene();sc.add(new THREE.HemisphereLight(0xffffff,0x9a96c8,.95));const k=new THREE.DirectionalLight(0xffffff,.85);k.position.set(3,6,5);sc.add(k);const r=new THREE.DirectionalLight(0xb9c4ff,.5);r.position.set(-5,3,-4);sc.add(r);sc.add(new THREE.AmbientLight(0xffffff,.15));
+ const sh=new THREE.Mesh(new THREE.PlaneGeometry(4.8,2.6),new THREE.MeshBasicMaterial({map:shadowTex(),transparent:true,depthWrite:false}));sh.rotation.x=-Math.PI/2;sh.position.y=-.56;sc.add(sh);return sc}
+const LIVE=[];
+function fb(el,i,st){el.innerHTML=`<div class="float" style="position:absolute;inset:0;display:grid;place-items:center">${shoe(i,st)}</div>`;return {set(a,b){fb(el,a,b)},dispose(){}}}
+function mount3D(el,i,st){
+ if(!HAS3D)return fb(el,i,st);
+ let ren;try{ren=new THREE.WebGLRenderer({alpha:true,antialias:true})}catch(e){return fb(el,i,st)}
+ const sc=makeScene(),cam=new THREE.PerspectiveCamera(30,1,.1,60),holder=new THREE.Group();sc.add(holder);
+ let cur=null;const set=(a,b)=>{if(cur){holder.remove(cur);disposeG(cur)}cur=buildShoe(a,b);holder.add(cur)};set(i,st);
+ const c=ren.domElement;ren.setPixelRatio(Math.min(devicePixelRatio||1,2));el.innerHTML='';el.appendChild(c);c.style.cssText='width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab';c.setAttribute('aria-label','3D sneaker. Drag to rotate.');
+ const size=()=>{const w=el.clientWidth||320,h=el.clientHeight||300;ren.setSize(w,h,false);cam.aspect=w/h;const d=Math.max(5.6,7.6/cam.aspect);cam.position.set(0,d*.26,d);cam.lookAt(0,0,0);cam.updateProjectionMatrix()};size();
+ const ro=window.ResizeObserver?new ResizeObserver(size):null;if(ro)ro.observe(el);
+ const base=matchMedia('(prefers-reduced-motion:reduce)').matches?0:.9;
+ let rot=-.6,vel=base,drag=false,lx=0,last=performance.now(),raf=0,dead=false;
+ const api={set,dispose(){if(dead)return;dead=true;cancelAnimationFrame(raf);if(ro)ro.disconnect();if(cur)disposeG(cur);ren.dispose();try{ren.forceContextLoss()}catch(e){}const k=LIVE.indexOf(api);if(k>=0)LIVE.splice(k,1)}};
+ c.addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;vel=0;try{c.setPointerCapture(e.pointerId)}catch(_){}c.style.cursor='grabbing'});
+ c.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-lx;lx=e.clientX;rot+=dx*.012;vel=Math.max(-6,Math.min(6,dx*.7))});
+ const up=()=>{drag=false;c.style.cursor='grab'};c.addEventListener('pointerup',up);c.addEventListener('pointercancel',up);
+ const frame=now=>{if(dead)return;if(!el.isConnected){api.dispose();return}raf=requestAnimationFrame(frame);const dt=Math.min(.05,(now-last)/1000);last=now;
+  if(!drag)vel+=(base-vel)*Math.min(1,dt*1.6);else vel*=.9;rot+=(drag?0:vel*dt);holder.rotation.y=rot;holder.position.y=Math.sin(now/900)*.05;holder.rotation.z=Math.sin(now/1300)*.02;ren.render(sc,cam)};
+ raf=requestAnimationFrame(frame);LIVE.push(api);return api}
+let SR=null,SS=null,SCAM=null,SH=null;const SNAP={};
+function snap(i,st){const k=i+'|'+st;if(SNAP[k])return SNAP[k];
+ if(!SR){SR=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});SR.setPixelRatio(1);SR.setSize(560,380,false);SS=makeScene();SCAM=new THREE.PerspectiveCamera(30,560/380,.1,60);SCAM.position.set(0,1.7,6.4);SCAM.lookAt(0,-.1,0);SH=new THREE.Group();SS.add(SH)}
+ const g=buildShoe(i,st);g.rotation.y=-.62;SH.add(g);SR.render(SS,SCAM);const u=SR.domElement.toDataURL('image/webp',.92);SH.remove(g);disposeG(g);return SNAP[k]=u}
+function hydrate(root){if(!HAS3D)return;const els=[...(root||document).querySelectorAll('[data-snap]:not([data-done])')];let n=0;
+ const run=()=>{const t0=performance.now();while(n<els.length&&performance.now()-t0<14){const e=els[n++];if(!e.isConnected)continue;e.dataset.done=1;const p=e.dataset.snap.split('|');try{e.innerHTML=`<img src="${snap(+p[0],p[1])}" alt="3D ${CW[+p[0]].n} ${p[1]} sneaker" style="width:100%;height:auto;display:block" draggable="false">`}catch(err){}}
+  if(n<els.length)setTimeout(run,0)};setTimeout(run,0)}
+const sn=(i,st)=>`<span class="snap" data-snap="${i}|${st}" style="display:block">${shoe(i,st)}</span>`;
+const lum=h=>parseInt(h.slice(1,3),16)*.299+parseInt(h.slice(3,5),16)*.587+parseInt(h.slice(5,7),16)*.114;
+function accent(i){const o=CW[i],r=document.documentElement.style;r.setProperty('--c1',lum(o.u1)>215?(lum(o.acc)<200?o.acc:o.u2):o.u1);r.setProperty('--c2',lum(o.u2)<35?o.p:o.u2)}
+const cartCount=()=>S.cart.reduce((a,c)=>a+c.qty,0);
+const sub=()=>S.cart.reduce((a,c)=>a+prod(c.pid).price*c.qty,0);
+const disc=()=>S.coupon==='STRIDE10'?Math.round(sub()*.1):0;
+const shipFee=()=>S.ship==='exp'?199:0;
+const total=()=>sub()-disc()+shipFee();
+function card(p){const wl=S.wish.includes(p.id);const bd=p.id%6===0?'New':p.id%7===0?'Bestseller':'';
+ return `<article class="card" tabindex="0" role="button" aria-label="${BR[p.b].n} ${p.name}" data-act="open" data-id="${p.id}">
+${bd?`<span class="badge">${bd}</span>`:''}<button class="heart ${wl?'on':''}" data-act="wish" data-id="${p.id}" aria-label="${wl?'Remove from':'Add to'} wishlist">♥</button>
+<div class="img tilt" style="background:radial-gradient(circle at 50% 65%,${CW[p.cw].u2}66,${CW[p.cw].u1}22 70%)"><div class="tilt-in">${sn(p.cw,p.style)}</div></div>
+<div class="meta"><div class="row"><span class="brand">${BR[p.b].n}</span><span class="tag ${p.tier}">${p.tier}</span></div><h3>${p.name}</h3>
+<div class="row"><span class="price">${inr(p.price)}</span><span class="mini" title="${p.opts.length} colours">${p.opts.map(o=>`<i style="background:${CW[o].u1}"></i>`).join('')}</span></div><span class="small">${p.style}, ${GN[p.g]}</span></div></article>`}
+const V={};
+function cmpData(p){const us={n:'Stride',price:p.price,ship:0};const o=RET.map(r=>({n:r.n,price:Math.round(p.price*r.f/10)*10-1,ship:r.s}));return {us,o}}
+function cmpHTML(p){const {us,o}=cmpData(p);const all=[us,...o];const max=Math.max(...all.map(x=>x.price+x.ship));const best=Math.min(...o.map(x=>x.price+x.ship));
+ return `<div class="scroll"><table class="cmp"><thead><tr><th>Store</th><th>Price</th><th>Delivery</th><th>Total</th></tr></thead><tbody>${all.map((x,i)=>`<tr class="${i?'':'us'}"><td>${x.n}${i?'':' (here)'}<div class="bar ${i?'':'us'}"><i style="width:${(x.price+x.ship)/max*100}%"></i></div></td><td>${inr(x.price)}</td><td>${x.ship?inr(x.ship):'Free'}</td><td>${inr(x.price+x.ship)}</td></tr>`).join('')}</tbody></table></div>
+ <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="save">You save ${inr(best-us.price)}</span><span class="small">Sample prices from three other stores, delivery included in the total.</span></div>`}
+const swatchHex=f=>CW[FAM[f][0]].u1;
+V.home=()=>{const c=S.hero,st=S.hst;const cnt=s=>PRODS.filter(p=>p.style===s).length;
+ return `<div class="view"><div class="herocard"><div>
+<span class="sticker">${PRODS.length} pairs · 16 brands</span>
+<h1 style="margin-top:16px">Find your next pair.</h1>
+<p>Small studios in Jaipur and Kyoto next to houses in Paris and Milan. Pick a shape, try it in 16 colourways, and see what the same pair costs at three other stores.</p>
+<div class="ctas"><button class="btn" data-go="shop">Shop all sneakers</button><button class="btn ghost" data-act="open" data-id="24">See a price check</button></div>
+<div class="pillrow" role="group" aria-label="Shape">${STY.map(s=>`<button class="${s===st?'on':''}" data-act="hst" data-s="${s}">${s}</button>`).join('')}</div>
+<div class="dots" style="margin-top:16px" role="group" aria-label="Colour">${CW.map((o,i)=>`<button class="dot ${i===c?'on':''}" data-act="hero" data-i="${i}" style="background:linear-gradient(135deg,${o.u1},${o.u2})" aria-label="${o.n}" title="${o.n}"></button>`).join('')}</div>
+</div>
+<div class="stage"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div><div class="v3d" id="heroShoe"></div><span class="sticker" id="heroName">${CW[c].n}</span><span class="hint">↻ Drag to spin 360°</span></div></div>
+<div class="marq"><div>${Array(2).fill(['Free delivery over ₹1,999','30-day returns','Price check on every pair','16 brands from 12 countries','Track your order to the door']).flat().map(t=>`<span>${t}</span><span>✦</span>`).join('')}</div></div>
+<section><div class="head"><h2>Shop by shape</h2></div><div class="bento">
+${STY.map((s,k)=>`<button class="bt ${k<2?'s3':'s2'} ${k===0?'tone':''}" data-act="sty" data-s="${s}"><div class="sh">${sn((k*3+1)%16,s)}</div><div><h3>${s}</h3><span class="small">${cnt(s)} pairs</span></div></button>`).join('')}
+<button class="bt s2 pop" data-act="origin" data-o="India"><h2 style="font-size:30px">Made by Indian brands</h2><span class="small">${PRODS.filter(p=>BR[p.b].o==='India').length} pairs from Dhoop, Kaveri, Marwar and Jugaad</span></button></div></section>
+<section><div class="head"><h2>Shop by colour</h2><span class="mute">16 colourways, 10 families</span></div><div class="swr">${Object.keys(FAM).map(f=>`<button class="sw" data-act="col" data-c="${f}" style="background:${swatchHex(f)}" aria-label="${f}" title="${f}"></button>`).join('')}</div></section>
+<section><div class="head"><h2>New and trending</h2><button class="btn ghost" data-go="shop">View all ${PRODS.length}</button></div><div class="grid">${[24,30,20,44,36,17,50,12].map(i=>card(prod(i))).join('')}</div></section>
+<section><div class="head"><h2>Brands from around the world</h2><span class="mute">Tap a brand to see its pairs</span></div><div class="brands">${BR.map((b,i)=>`<button class="bn ${b.o==='India'?'in':''}" data-act="brand" data-b="${i}"><b>${b.n}</b><span class="small">${b.o}, ${PRODS.filter(p=>p.b===i).length} pairs</span><span class="tag ${b.t}" style="justify-self:start">${b.t}</span></button>`).join('')}</div></section>
+<section><div class="panel" style="display:grid;grid-template-columns:1fr 1.2fr;gap:24px;align-items:center" id="pc"><div><h2>Same pair, other stores.</h2><p class="mute" style="max-width:40ch">Every pair shows its price, delivery fee and total at three other stores, next to ours.</p><span class="small">${BR[prod(24).b].n} ${prod(24).name}, shown as an example</span></div><div>${cmpHTML(prod(24))}</div></div></section></div>`};
+function filt(){const f=S.f;return PRODS.filter(p=>(!f.tier.length||f.tier.includes(p.tier))&&(!f.brand.length||f.brand.includes(p.b))&&(!f.style.length||f.style.includes(p.style))&&(!f.color.length||f.color.some(c=>p.opts.some(o=>FAM[c].includes(o))))&&(!f.gender.length||f.gender.includes(p.g))&&(!f.origin.length||f.origin.includes(BR[p.b].o==='India'?'India':'Global'))&&p.price<=f.max&&(!f.q||(p.name+' '+BR[p.b].n+' '+p.style).toLowerCase().includes(f.q)))}
+function sorted(l){l=[...l];if(S.sort==='lo')l.sort((a,b)=>a.price-b.price);if(S.sort==='hi')l.sort((a,b)=>b.price-a.price);if(S.sort==='new')l.reverse();return l}
+const ch=(k,v,lbl,extra)=>`<button class="chip ${S.f[k].includes(v)?'on':''}" data-act="ft" data-k="${k}" data-v="${v}">${extra||''}${lbl||v}</button>`;
+function results(){const l=sorted(filt());const sh=l.slice(0,S.shown);
+ return {n:l.length,html:sh.length?`<div class="grid">${sh.map(card).join('')}</div>${l.length>sh.length?`<div style="text-align:center;margin-top:22px"><button class="btn ghost" data-act="more">Show more (${l.length-sh.length} left)</button></div>`:''}`:`<div class="panel center" style="margin-top:0"><h3>No pairs match these filters</h3><p class="mute">Loosen a filter or raise the price limit.</p><button class="btn" data-act="clear">Clear filters</button></div>`}}
+V.shop=()=>{const r=results();const f=S.f;return `<div class="view"><div style="padding-top:20px"><h1 style="font-size:clamp(34px,5vw,64px)">All sneakers</h1></div>
+<div class="shop"><details class="side" id="side"><summary>Filters <button class="link" data-act="clear" style="font:500 13px var(--body)">Clear</button></summary>
+<div class="fg"><h4>Tier</h4><div class="chips">${['Indie','Premium','Luxury'].map(t=>ch('tier',t)).join('')}</div></div>
+<div class="fg"><h4>Made in</h4><div class="chips">${ch('origin','India','India')}${ch('origin','Global','Rest of the world')}</div></div>
+<div class="fg"><h4>Shape</h4><div class="chips">${STY.map(s=>ch('style',s)).join('')}</div></div>
+<div class="fg"><h4>For</h4><div class="chips">${['Men','Women','Unisex'].map(g=>ch('gender',g)).join('')}</div></div>
+<div class="fg"><h4>Colour</h4><div class="chips">${Object.keys(FAM).map(c=>ch('color',c,c,`<i style="background:${swatchHex(c)}"></i>`)).join('')}</div></div>
+<div class="fg"><h4>Price up to <b id="pv" style="color:var(--fg)">${inr(f.max)}</b></h4><input type="range" id="pmax" min="3000" max="80000" step="500" value="${f.max}" aria-label="Maximum price"></div>
+<div class="fg"><h4>Brand</h4><div class="chips">${BR.map((b,i)=>`<button class="chip ${f.brand.includes(i)?'on':''}" data-act="ft" data-k="brand" data-v="${i}">${b.n}</button>`).join('')}</div></div></details>
+<div><div class="toolbar"><input type="search" id="q" placeholder="Search by name, brand or shape" value="${f.q}" aria-label="Search"><select id="sort" aria-label="Sort"><option value="feat">Featured</option><option value="new">Newest</option><option value="lo">Price: low to high</option><option value="hi">Price: high to low</option></select><span class="small" id="cnt">${r.n} pairs</span></div><div id="results">${r.html}</div></div></div></div>`};
+V.product=()=>{const p=prod(S.pid),c=S.cw,b=BR[p.b],wl=S.wish.includes(p.id);return `<div class="view"><button class="crumb" data-go="shop">Back to all sneakers</button>
+<div class="pdp"><div class="stage"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div><div class="v3d" id="pShoe"></div><span class="hint">↻ Drag to spin 360°</span></div>
+<div style="display:grid;gap:18px;align-content:start;min-width:0"><div><div style="display:flex;gap:10px;align-items:center"><span class="brand">${b.n}, ${b.o}</span><span class="tag ${p.tier}">${p.tier}</span></div><h1 style="font-size:clamp(34px,4.6vw,58px);margin-top:10px">${p.name}</h1><div class="price" style="font-size:30px;margin-top:12px">${inr(p.price)} <span class="small" style="font-family:var(--body);font-weight:400">tax included</span></div></div>
+<div><div style="font-weight:700">Colour: <span id="cwName">${CW[c].n}</span> <span class="small">(${p.opts.length} options)</span></div><div class="dots" style="margin-top:10px">${p.opts.map(o=>`<button class="dot ${o===c?'on':''}" data-act="cw" data-i="${o}" style="background:linear-gradient(135deg,${CW[o].u1},${CW[o].u2})" aria-label="${CW[o].n}" title="${CW[o].n}"></button>`).join('')}</div></div>
+<div><div style="display:flex;justify-content:space-between;font-weight:700"><span>Size (UK)</span><span class="small">True to size</span></div><div class="sizes ${S.err?'err':''}" style="margin-top:10px">${[5,6,7,8,9,10,11,12].map(s=>`<button class="${S.size===s?'on':''}" data-act="size" data-s="${s}">${s}</button>`).join('')}</div><div class="err-msg">${S.err?'Choose a size to add this pair.':''}</div></div>
+<div style="display:flex;gap:10px"><button class="btn" style="flex:1" data-act="add">Add to bag, ${inr(p.price)}</button><button class="heart ${wl?'on':''}" style="position:static;width:52px;height:52px;border:1px solid var(--line)" data-act="wish" data-id="${p.id}" aria-label="Wishlist">♥</button></div>
+<div class="spec"><span>Shape</span><b>${p.style}</b><span>Fit</span><b>${GN[p.g]}</b><span>Brand from</span><b>${b.o}</b><span>Tier</span><b>${p.tier}</b></div>
+<div class="perks"><div><b>Free delivery</b>2–4 days</div><div><b>30-day returns</b>Free pickup</div><div><b>Authentic</b>Brand verified</div></div></div></div>
+<section><div class="panel"><div class="head" style="margin-bottom:10px"><h2>Price check</h2></div>${cmpHTML(p)}</div></section>
+<section><div class="head"><h2>More ${p.style.toLowerCase()} pairs</h2></div><div class="grid">${PRODS.filter(x=>x.style===p.style&&x.id!==p.id).slice((p.id*3)%8,(p.id*3)%8+4).map(card).join('')}</div></section></div>`};
+V.wish=()=>{const l=S.wish.map(prod);return l.length?`<div class="view"><div style="padding-top:20px;margin-bottom:22px"><h1 style="font-size:clamp(34px,5vw,64px)">Wishlist</h1></div><div class="grid">${l.map(card).join('')}</div></div>`:`<div class="center view"><h2>No saved pairs yet</h2><p class="mute">Tap the heart on any sneaker to keep it here.</p><button class="btn" data-go="shop">Browse sneakers</button></div>`};
+function summary(btn){return `<div class="panel sum"><h3>Order summary</h3>${S.cart.map(c=>`<div><span class="mute">${prod(c.pid).name}, UK ${c.size}, ${c.qty} ${c.qty>1?'pairs':'pair'}</span><span>${inr(prod(c.pid).price*c.qty)}</span></div>`).join('')}
+<div><span class="mute">Subtotal</span><span>${inr(sub())}</span></div>${disc()?`<div><span class="mute">Code STRIDE10</span><span style="color:var(--good)">−${inr(disc())}</span></div>`:''}
+<div><span class="mute">Delivery</span><span>${shipFee()?inr(shipFee()):'Free'}</span></div><div class="tot"><span>Total</span><span>${inr(total())}</span></div>${btn||''}</div>`}
+const empty=()=>`<div class="center view"><h2>Your bag is empty</h2><p class="mute">Pick a pair and a size and it will show up here.</p><button class="btn" data-go="shop">Browse sneakers</button></div>`;
+const stepper=n=>`<div class="steps">${['Bag','Delivery','Payment'].map((s,i)=>`<span class="${i+1<=n?'on':''}"><span class="n">${i+1}</span>${i+1===n?`<b>${s}</b>`:s}</span>${i<2?'<i></i>':''}`).join('')}</div>`;
+V.cart=()=>!S.cart.length?empty():`<div class="view">${stepper(1)}<div class="two"><div class="panel"><h2 style="margin-bottom:6px">Your bag</h2>${S.cart.map((c,i)=>{const p=prod(c.pid);return `<div class="line"><div class="img">${sn(c.cw,p.style)}</div><div><div class="brand">${BR[p.b].n}</div><h3>${p.name}</h3><div class="small" style="margin:2px 0 8px">${CW[c.cw].n}, UK ${c.size}</div><span class="qty"><button data-act="dec" data-i="${i}" aria-label="One less">−</button><span>${c.qty}</span><button data-act="inc" data-i="${i}" aria-label="One more">+</button></span></div><div style="text-align:right"><div class="price">${inr(p.price*c.qty)}</div><button class="link" data-act="rm" data-i="${i}">Remove</button></div></div>`}).join('')}
+<div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap"><input type="text" id="coupon" placeholder="Promo code (try STRIDE10)" value="${S.coupon}" style="flex:1;min-width:160px" aria-label="Promo code"><button class="btn ghost" data-act="coupon" style="padding:12px 22px">Apply</button></div></div>
+${summary('<button class="btn block" data-go="checkout">Continue to delivery</button>')}</div></div>`;
+V.checkout=()=>!S.cart.length?empty():`<div class="view">${stepper(2)}<div class="two"><form class="panel" id="shipForm" novalidate><h2>Delivery details</h2>
+<div class="f2"><label>Full name<input type="text" id="fn" required value="${S.addr.name}" placeholder="Your name"></label><label>Mobile<input type="tel" id="ph" required pattern="[0-9]{10}" value="${S.addr.phone}" placeholder="10-digit number"></label></div>
+<label>Email<input type="email" id="em" required value="${S.addr.email}" placeholder="you@example.com"></label>
+<label>Address<input type="text" id="ad" required value="${S.addr.line}" placeholder="Flat, building, street"></label>
+<div class="f2"><label>City<input type="text" id="ct" required value="${S.addr.city}" placeholder="City"></label><label>PIN code<input type="text" id="pn" required pattern="[0-9]{6}" value="${S.addr.pin}" placeholder="6 digits"></label></div>
+<h3 style="margin-top:8px">Delivery speed</h3>
+<label class="opt"><input type="radio" name="sp" value="std" ${S.ship==='std'?'checked':''}><span><b>Standard, free</b>Arrives in 2–4 days</span></label>
+<label class="opt"><input type="radio" name="sp" value="exp" ${S.ship==='exp'?'checked':''}><span><b>Express, ₹199</b>Arrives in 1–2 days</span></label>
+<div class="err-msg" id="fe"></div><button class="btn" type="submit">Continue to payment</button></form>${summary()}</div></div>`;
+V.payment=()=>!S.cart.length?empty():`<div class="view">${stepper(3)}<div class="two"><div class="panel" style="display:grid;gap:16px"><h2>Payment</h2><div class="chips">${[['upi','UPI'],['card','Card'],['cod','Cash on delivery']].map(t=>`<button class="chip ${S.pay===t[0]?'on':''}" style="padding:9px 18px;font-size:14px" data-act="pay" data-p="${t[0]}">${t[1]}</button>`).join('')}</div>
+<form id="payForm" novalidate>${S.pay==='upi'?`<label>UPI ID<input type="text" id="upi" required placeholder="name@bank" pattern="[a-zA-Z0-9.\\-_]+@[a-zA-Z]+"></label><p class="small" style="margin:0">You will get a request in your UPI app. This is a demo and nothing is charged.</p>`:S.pay==='card'?`<label>Card number<input type="text" id="cn" required inputmode="numeric" placeholder="1234 5678 9012 3456" pattern="[0-9 ]{16,19}"></label><div class="f2"><label>Expiry<input type="text" id="ce" required placeholder="MM/YY" pattern="[0-9]{2}/[0-9]{2}"></label><label>CVV<input type="text" id="cv" required placeholder="123" pattern="[0-9]{3}"></label></div><label>Name on card<input type="text" id="cm" required placeholder="As printed on the card"></label><p class="small" style="margin:0">This is a demo form. Do not enter a real card number.</p>`:`<div class="opt"><span><b>Pay when it arrives</b>Cash or UPI to the courier.</span></div>`}
+<div class="err-msg" id="pe"></div><button class="btn block" type="submit">${S.pay==='cod'?'Place order':'Pay '+inr(total())}</button></form></div>${summary()}</div></div>`;
+V.done=()=>{const o=S.order;if(!o)return empty();return `<div class="center view"><div class="ok">✓</div><span class="sticker">Order ${o.id}</span><h1 style="font-size:clamp(34px,5vw,60px);margin:14px 0">It’s yours.</h1><p class="mute">We emailed your receipt. Your pair arrives by <b style="color:var(--fg)">${o.eta}</b> in ${o.city}.</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px"><button class="btn" data-go="track">Track order</button><button class="btn ghost" data-go="shop">Keep shopping</button></div></div>`};
+const STEPS=[['Order placed','Payment confirmed'],['Packed','Quality checked at our Bhiwandi hub'],['Shipped','Handed to the courier'],['Out for delivery','Courier is in your area'],['Delivered','Signed for at your door']];
+V.track=()=>{const o=S.order;if(!o)return `<div class="center view"><h2>Track an order</h2><p class="mute">Place an order and its steps will show up here.</p><button class="btn" data-go="shop">Shop sneakers</button></div>`;const n=S.stepN,pct=n/4*100;
+ return `<div class="view"><div style="padding-top:20px"><span class="sticker">Order ${o.id}</span><h1 style="font-size:clamp(34px,5vw,60px);margin-top:12px">${n===4?'Delivered':STEPS[n][0]}</h1></div>
+<div class="track"><div class="panel">${STEPS.map((s,i)=>`<div class="st ${i<n||n===4?'done':''} ${i===n&&n<4?'now':''}"><div class="d">${i<n||n===4?'✓':i+1}</div><div><b>${s[0]}</b><small>${i<=n?s[1]:'Pending'}</small>${i<=n?`<small>${o.times[i]||''}</small>`:''}</div></div>`).join('')}
+<button class="btn ghost" data-act="adv" ${n>=4?'disabled style="opacity:.5"':''}>Demo: move to the next step</button></div>
+<div style="display:grid;gap:16px"><div class="panel"><h3>Journey</h3><div class="route"><i style="width:${pct}%"></i><u style="left:${pct}%">➜</u></div><div class="rl"><span>Bhiwandi hub</span><span>${o.city}</span></div></div>
+<div class="panel sum"><h3>Items</h3>${o.items.map(c=>`<div><span class="mute">${prod(c.pid).name}, ${CW[c.cw].n}, UK ${c.size}, ${c.qty} ${c.qty>1?'pairs':'pair'}</span></div>`).join('')}<div class="tot"><span>Paid</span><span>${inr(o.total)}</span></div><div class="small">Ship to: ${o.addr}</div><div class="small">Courier: Stride Express, AWB ${o.awb}</div></div></div></div></div>`};
+let HERO=null,PDP=null;
+function render(){const r=S.route;LIVE.slice().forEach(c=>c.dispose());HERO=PDP=null;$('#app').innerHTML=V[r]();$('#cartBtn').innerHTML=`<span class="lbl">Bag</span><b>${cartCount()}</b>`;$('#wishBtn').innerHTML=`♥<b>${S.wish.length}</b>`;
+ $('#links').innerHTML=[['home','Home'],['shop','Shop'],['wish','Wishlist'],['track','Orders']].map(l=>`<button class="${l[0]===r?'on':''}" data-go="${l[0]}">${l[1]}</button>`).join('');
+ accent(r==='product'?S.cw:r==='home'?S.hero:11);
+ const sd=$('#side');if(sd&&innerWidth>900)sd.open=true;
+ bindShop();bindForms();window.scrollTo({top:0});
+ if($('#heroShoe'))HERO=mount3D($('#heroShoe'),S.hero,S.hst);
+ if($('#pShoe'))PDP=mount3D($('#pShoe'),S.cw,prod(S.pid).style);
+ hydrate()}
+function bindShop(){const q=$('#q');if(q)q.oninput=()=>{S.f.q=q.value.trim().toLowerCase();S.shown=24;upd()};const so=$('#sort');if(so){so.value=S.sort;so.onchange=()=>{S.sort=so.value;upd()}}
+ const pm=$('#pmax');if(pm)pm.oninput=()=>{S.f.max=+pm.value;$('#pv').textContent=inr(S.f.max);S.shown=24;upd()}}
+function upd(){const r=results();$('#results').innerHTML=r.html;$('#cnt').textContent=r.n+' pairs';hydrate($('#results'))}
+function go(r){if(!ROUTES.includes(r))r='home';if(r==='product'&&!S.pid)r='shop';S.route=r;if(location.hash!=='#'+r)history.replaceState(null,'','#'+r);render()}
+function resetF(){S.f={tier:[],brand:[],style:[],color:[],gender:[],origin:[],max:80000,q:''};S.shown=24}
+function tog(k,v){const a=S.f[k],i=a.indexOf(v);i<0?a.push(v):a.splice(i,1)}
+function act(e){const g=e.target.closest('[data-go]');if(g){go(g.dataset.go);return}
+ const a=e.target.closest('[data-act]');if(!a)return;const d=a.dataset;
+ if(d.act==='open'){S.pid=+d.id;S.cw=prod(S.pid).cw;S.size=null;S.err=false;go('product')}
+ if(d.act==='wish'){const id=+d.id,i=S.wish.indexOf(id);i<0?S.wish.push(id):S.wish.splice(i,1);if(S.route==='wish')render();else{document.querySelectorAll(`.heart[data-id="${id}"]`).forEach(h=>h.classList.toggle('on',i<0));$('#wishBtn').innerHTML=`♥<b>${S.wish.length}</b>`}}
+ if(d.act==='hero'){S.hero=+d.i;accent(S.hero);HERO&&HERO.set(S.hero,S.hst);$('#heroName').textContent=CW[S.hero].n;document.querySelectorAll('.dot').forEach((x,i)=>x.classList.toggle('on',i===S.hero))}
+ if(d.act==='hst'){S.hst=d.s;HERO&&HERO.set(S.hero,S.hst);document.querySelectorAll('.pillrow button').forEach(x=>x.classList.toggle('on',x.dataset.s===S.hst))}
+ if(d.act==='cw'){S.cw=+d.i;accent(S.cw);PDP&&PDP.set(S.cw,prod(S.pid).style);$('#cwName').textContent=CW[S.cw].n;document.querySelectorAll('.dot').forEach(x=>x.classList.toggle('on',+x.dataset.i===S.cw))}
+ if(d.act==='size'){S.size=+d.s;S.err=false;document.querySelectorAll('.sizes button').forEach(x=>x.classList.toggle('on',+x.dataset.s===S.size));$('.sizes').classList.remove('err');$('.err-msg').textContent=''}
+ if(d.act==='add'){if(!S.size){S.err=true;$('.sizes').classList.add('err');$('.err-msg').textContent='Choose a size to add this pair.';return}
+  const ex=S.cart.find(c=>c.pid===S.pid&&c.cw===S.cw&&c.size===S.size);if(ex)ex.qty++;else S.cart.push({pid:S.pid,cw:S.cw,size:S.size,qty:1});go('cart')}
+ if(d.act==='ft'){tog(d.k,d.k==='brand'?+d.v:d.v);S.shown=24;a.classList.toggle('on');upd()}
+ if(d.act==='clear'){e.preventDefault();resetF();render()}
+ if(d.act==='more'){S.shown+=24;upd()}
+ if(d.act==='sty'){resetF();S.f.style=[d.s];go('shop')}
+ if(d.act==='col'){resetF();S.f.color=[d.c];go('shop')}
+ if(d.act==='origin'){resetF();S.f.origin=[d.o];go('shop')}
+ if(d.act==='brand'){resetF();S.f.brand=[+d.b];go('shop')}
+ if(d.act==='inc'){S.cart[+d.i].qty++;render()}
+ if(d.act==='dec'){const c=S.cart[+d.i];c.qty--;if(c.qty<1)S.cart.splice(+d.i,1);render()}
+ if(d.act==='rm'){S.cart.splice(+d.i,1);render()}
+ if(d.act==='coupon'){S.coupon=$('#coupon').value.trim().toUpperCase();render()}
+ if(d.act==='pay'){S.pay=d.p;render()}
+ if(d.act==='adv'&&S.stepN<4){S.stepN++;S.order.times[S.stepN]=new Date().toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});render()}}
+document.addEventListener('click',act);
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('.card')){e.preventDefault();act(e)}});
+$('#themeBtn').onclick=()=>{const r=document.documentElement,dk=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=dk?'light':'dark'};
+function bindForms(){const sf=$('#shipForm');if(sf)sf.onsubmit=e=>{e.preventDefault();const ok=sf.checkValidity();$('#fe').textContent=ok?'':'Fill in every field. Mobile needs 10 digits and PIN code 6 digits.';if(!ok)return;
+  S.addr={name:$('#fn').value,phone:$('#ph').value,email:$('#em').value,line:$('#ad').value,city:$('#ct').value,pin:$('#pn').value};S.ship=sf.querySelector('input[name=sp]:checked').value;go('payment')};
+ const pf=$('#payForm');if(pf)pf.onsubmit=e=>{e.preventDefault();if(!pf.checkValidity()){$('#pe').textContent='Check the details and try again.';return}
+  const p=document.createElement('div');p.className='proc';p.innerHTML='<div><div class="spin"></div><h3>Confirming your payment</h3><p class="mute">Keep this page open.</p></div>';document.body.appendChild(p);
+  setTimeout(()=>{p.remove();const d=new Date();const eta=new Date(Date.now()+(S.ship==='exp'?2:4)*864e5).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+   S.order={id:'STR-'+Math.floor(100000+Math.random()*900000),eta,city:S.addr.city,total:total(),items:S.cart.map(c=>({...c})),addr:`${S.addr.line}, ${S.addr.city} ${S.addr.pin}`,awb:'SX'+Math.floor(1e9+Math.random()*9e9),times:[d.toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})]};
+   S.stepN=0;S.cart=[];S.coupon='';go('done')},1600)}}
+document.addEventListener('pointermove',e=>{document.querySelectorAll('.tilt').forEach(t=>{const i=t.querySelector('.tilt-in');if(!i)return;const r=t.getBoundingClientRect();
+ if(e.clientX<r.left-40||e.clientX>r.right+40||e.clientY<r.top-40||e.clientY>r.bottom+40){i.style.transform='';return}
+ const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;i.style.transform=`rotateY(${x*20}deg) rotateX(${-y*14}deg)`})});
+window.addEventListener('hashchange',()=>{const r=location.hash.slice(1);if(r&&r!==S.route)go(r)});
+go(ROUTES.includes(location.hash.slice(1))?location.hash.slice(1):'home');
+</script>
+</body>
+</html>
